@@ -6,7 +6,6 @@ function isPositiveInteger(value) {
   return Number.isInteger(Number(value)) && Number(value) > 0;
 }
 
-
 router.get("/", async (request, response) => {
   const db = request.app.locals.db;
 
@@ -17,47 +16,37 @@ router.get("/", async (request, response) => {
 
     response.status(200).json(photographers);
   } catch (error) {
-    response.status(500).json({
-      error: "Unable to retrieve photographers"
-    });
+    response.status(500).json({ error: "Unable to retrieve photographers" });
   }
 });
 
-// GET one photographer by ID.
 router.get("/:photographerId", async (request, response) => {
   const db = request.app.locals.db;
   const { photographerId } = request.params;
 
   if (!isPositiveInteger(photographerId)) {
-    return response.status(400).json({
-      error: "photographerId must be a positive integer"
-    });
+    return response.status(400).json({ error: "Invalid photographer ID" });
   }
 
   try {
     const photographer = await db.get(
       "SELECT id, name, email, phone, created_at FROM photographers WHERE id = ?",
-      [photographerId]
+      [Number(photographerId)]
     );
 
     if (!photographer) {
-      return response.status(404).json({
-        error: "Photographer not found"
-      });
+      return response.status(404).json({ error: "Photographer not found" });
     }
 
     response.status(200).json(photographer);
   } catch (error) {
-    response.status(500).json({
-      error: "Unable to retrieve photographer"
-    });
+    response.status(500).json({ error: "Unable to retrieve photographer" });
   }
 });
 
-// POST a new photographer.
 router.post("/", async (request, response) => {
   const db = request.app.locals.db;
-  const { name, email, phone } = request.body;
+  const { name, email, phone } = request.body || {};
 
   if (
     typeof name !== "string" || !name.trim() ||
@@ -71,11 +60,7 @@ router.post("/", async (request, response) => {
   try {
     const result = await db.run(
       "INSERT INTO photographers (name, email, phone) VALUES (?, ?, ?)",
-      [
-        name.trim(),
-        email.trim(),
-        phone ? String(phone).trim() : null
-      ]
+      [name.trim(), email.trim(), phone ? String(phone).trim() : null]
     );
 
     const photographer = await db.get(
@@ -91,21 +76,18 @@ router.post("/", async (request, response) => {
       });
     }
 
-    response.status(500).json({
-      error: "Unable to add photographer"
-    });
+    response.status(500).json({ error: "Unable to add photographer" });
   }
 });
 
+// PUT - Update a photographer.
 router.put("/:photographerId", async (request, response) => {
   const db = request.app.locals.db;
   const { photographerId } = request.params;
-  const { name, email, phone } = request.body;
+  const { name, email, phone } = request.body || {};
 
   if (!isPositiveInteger(photographerId)) {
-    return response.status(400).json({
-      error: "photographerId must be a positive integer"
-    });
+    return response.status(400).json({ error: "Invalid photographer ID" });
   }
 
   if (
@@ -118,33 +100,27 @@ router.put("/:photographerId", async (request, response) => {
   }
 
   try {
-    const existingPhotographer = await db.get(
+    const existing = await db.get(
       "SELECT id FROM photographers WHERE id = ?",
-      [photographerId]
+      [Number(photographerId)]
     );
 
-    if (!existingPhotographer) {
-      return response.status(404).json({
-        error: "Photographer not found"
-      });
+    if (!existing) {
+      return response.status(404).json({ error: "Photographer not found" });
     }
 
     await db.run(
       "UPDATE photographers SET name = ?, email = ?, phone = ? WHERE id = ?",
-      [
-        name.trim(),
-        email.trim(),
-        phone ? String(phone).trim() : null,
-        photographerId
-      ]
+      [name.trim(), email.trim(), phone ? String(phone).trim() : null,
+        Number(photographerId)]
     );
 
-    const updatedPhotographer = await db.get(
+    const updated = await db.get(
       "SELECT id, name, email, phone, created_at FROM photographers WHERE id = ?",
-      [photographerId]
+      [Number(photographerId)]
     );
 
-    response.status(200).json(updatedPhotographer);
+    response.status(200).json(updated);
   } catch (error) {
     if (error.code === "SQLITE_CONSTRAINT") {
       return response.status(409).json({
@@ -152,37 +128,32 @@ router.put("/:photographerId", async (request, response) => {
       });
     }
 
-    response.status(500).json({
-      error: "Unable to update photographer"
-    });
+    response.status(500).json({ error: "Unable to update photographer" });
   }
 });
 
+// DELETE a photographer.
 router.delete("/:photographerId", async (request, response) => {
   const db = request.app.locals.db;
   const { photographerId } = request.params;
 
   if (!isPositiveInteger(photographerId)) {
-    return response.status(400).json({
-      error: "photographerId must be a positive integer"
-    });
+    return response.status(400).json({ error: "Invalid photographer ID" });
   }
 
   try {
-    const existingPhotographer = await db.get(
+    const existing = await db.get(
       "SELECT id FROM photographers WHERE id = ?",
-      [photographerId]
+      [Number(photographerId)]
     );
 
-    if (!existingPhotographer) {
-      return response.status(404).json({
-        error: "Photographer not found"
-      });
+    if (!existing) {
+      return response.status(404).json({ error: "Photographer not found" });
     }
 
     await db.run(
       "DELETE FROM photographers WHERE id = ?",
-      [photographerId]
+      [Number(photographerId)]
     );
 
     response.status(200).json({
@@ -195,9 +166,7 @@ router.delete("/:photographerId", async (request, response) => {
       });
     }
 
-    response.status(500).json({
-      error: "Unable to delete photographer"
-    });
+    response.status(500).json({ error: "Unable to delete photographer" });
   }
 });
 
