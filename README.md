@@ -359,21 +359,57 @@ The following screenshots demonstrate successful API testing conducted using Pos
 
 ### Photographer API Testing
 
-| Test | Screenshot Location |
-|---|---|
-| GET All Photographers | `screenshots/photographers/get-all.png` |
-| GET Photographer by ID | `screenshots/photographers/get-by-id.png` |
-| POST Add Photographer | `screenshots/photographers/post-photographer.png` |
-| PUT Update Photographer | `screenshots/photographers/put-photographer.png` |
-| DELETE Photographer | `screenshots/photographers/delete-photographer.png` |
+The following screenshots demonstrate successful API testing conducted using Postman against the deployed service:
+
+| Test | Endpoint | Method | Status | Screenshot Link |
+|---|---|---|---|---|
+| GET All Photographers | `/api/photographers` | GET | 200 OK | [View Screenshot](screenshots/photographers/get-all.png) |
+| GET Photographer by ID | `/api/photographers/1` | GET | 200 OK | [View Screenshot](screenshots/photographers/get-by-id.png) |
+| POST Add Photographer | `/api/photographers` | POST | 201 Created | [View Screenshot](screenshots/photographers/post-photographer.png) |
+| PUT Update Photographer | `/api/photographers/1` | PUT | 200 OK | [View Screenshot](screenshots/photographers/put-photographer.png) |
+| DELETE Photographer | `/api/photographers/2` | DELETE | 200 OK | [View Screenshot](screenshots/photographers/delete-photographer.png) |
+
+#### Photographer API Test Evidence
+
+##### 1. GET All Photographers (`GET /api/photographers`)
+![GET All Photographers](screenshots/photographers/get-all.png)
+
+##### 2. GET Photographer by ID (`GET /api/photographers/1`)
+![GET Photographer by ID](screenshots/photographers/get-by-id.png)
+
+##### 3. POST Add Photographer (`POST /api/photographers`)
+![POST Add Photographer](screenshots/photographers/post-photographer.png)
+
+##### 4. PUT Update Photographer (`PUT /api/photographers/1`)
+![PUT Update Photographer](screenshots/photographers/put-photographer.png)
+
+##### 5. DELETE Photographer (`DELETE /api/photographers/2`)
+![DELETE Photographer](screenshots/photographers/delete-photographer.png)
 
 ### Rental API Testing
 
-| Test | Screenshot Location |
-|---|---|
-| GET All Rentals | `screenshots/rentals/get-all.png` |
-| POST Create Rental | `screenshots/rentals/post-rental.png` |
-| Rental Details with Related Information | `screenshots/rentals/rental-details.png` |
+The following screenshots demonstrate successful API testing conducted using Postman against the deployed service:
+
+| Test | Endpoint | Method | Status | Screenshot Link |
+|---|---|---|---|---|
+| GET All Rentals | `/api/rentals` | GET | 200 OK | [View Screenshot](screenshots/rentals/get-all.png) |
+| Rental Details (with Joins) | `/api/rentals/1` | GET | 200 OK | [View Screenshot](screenshots/rentals/rental-details.png) |
+| POST Create Rental | `/api/rentals` | POST | 201 Created | [View Screenshot](screenshots/rentals/post-rental.png) |
+| PUT Update Rental | `/api/rentals/1` | PUT | 200 OK | [View Screenshot](screenshots/rentals/put-rental.png) |
+
+#### Rental API Test Evidence
+
+##### 1. GET All Rentals (`GET /api/rentals`)
+![GET All Rentals](screenshots/rentals/get-all.png)
+
+##### 2. Rental Details with Related Information (`GET /api/rentals/1`)
+![Rental Details with Related Information](screenshots/rentals/rental-details.png)
+
+##### 3. POST Create Rental (`POST /api/rentals`)
+![POST Create Rental](screenshots/rentals/post-rental.png)
+
+##### 4. PUT Update Rental (`PUT /api/rentals/1`)
+![PUT Update Rental](screenshots/rentals/put-rental.png)
 
 **Note:** Add only screenshots of tests that were actually performed. These paths are suggested names; change them if your actual image filenames are different.
 
