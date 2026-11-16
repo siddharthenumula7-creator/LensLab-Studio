@@ -1,6 +1,6 @@
 const express = require("express");
 const path = require("path");
-const { initializeDatabase } = require("./db");
+const { initializeDatabase } = require("./database/db");
 
 const cameraRoutes = require("./routes/cameras");
 const photographerRoutes = require("./routes/photographers");
