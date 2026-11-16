@@ -1,0 +1,303 @@
+{
+  "info": {
+    "name": "LensLab Studio API",
+    "_postman_id": "8a9bb9ab-6f61-4e40-9d4f-0d56a3e8b101",
+    "description": "Ordered tests for the LensLab Studio assignment. Reset the database before running the full collection.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Add photographer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/photographers",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Asha Rao\",\n  \"email\": \"asha.lenslab@example.com\",\n  \"phone\": \"9876543210\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Photographer created\", () => pm.response.to.have.status(201));",
+              "const data = pm.response.json();",
+              "pm.collectionVariables.set(\"photographerId\", data.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Add first camera - CAM-0001",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/cameras",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Canon EOS 90D\",\n  \"kind\": \"DSLR\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"First camera created\", () => pm.response.to.have.status(201));",
+              "const data = pm.response.json();",
+              "pm.test(\"First code is CAM-0001\", () => pm.expect(data.code).to.eql(\"CAM-0001\"));",
+              "pm.collectionVariables.set(\"camera1Id\", data.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Add second camera - CAM-0002",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/cameras",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Sony A7 IV\",\n  \"kind\": \"Mirrorless\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Second camera created\", () => pm.response.to.have.status(201));",
+              "const data = pm.response.json();",
+              "pm.test(\"Second code is CAM-0002\", () => pm.expect(data.code).to.eql(\"CAM-0002\"));",
+              "pm.collectionVariables.set(\"camera2Id\", data.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Update first camera - code must not change",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/cameras/{{camera1Id}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Canon EOS 90D Updated\",\n  \"kind\": \"DSLR\",\n  \"code\": \"CAM-9999\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Camera updated\", () => pm.response.to.have.status(200));",
+              "const data = pm.response.json();",
+              "pm.test(\"Code remains CAM-0001\", () => pm.expect(data.code).to.eql(\"CAM-0001\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Search cameras by kind",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/cameras?kind=DSLR"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Search succeeds\", () => pm.response.to.have.status(200));",
+              "pm.test(\"All results are DSLR\", () => pm.response.json().forEach(camera => pm.expect(camera.kind.toLowerCase()).to.eql(\"dslr\")));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Create rental",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/rentals",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"photographerId\": \"{{photographerId}}\",\n  \"cameraId\": \"{{camera1Id}}\",\n  \"rentalDate\": \"2026-11-20\",\n  \"returnDate\": \"2026-11-21\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Rental created\", () => pm.response.to.have.status(201));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Get rentals - JOIN names",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/rentals"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Rental list succeeds\", () => pm.response.to.have.status(200));",
+              "const rows = pm.response.json();",
+              "pm.test(\"JOIN includes photographer and camera names\", () => { pm.expect(rows.length).to.be.above(0); pm.expect(rows[0]).to.have.property(\"photographer_name\"); pm.expect(rows[0]).to.have.property(\"camera_name\"); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Duplicate camera/date must return 409",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/rentals",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"photographerId\": \"{{photographerId}}\",\n  \"cameraId\": \"{{camera1Id}}\",\n  \"rentalDate\": \"2026-11-20\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Duplicate booking is rejected\", () => pm.response.to.have.status(409));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. Get one camera",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/cameras/{{camera1Id}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Get one camera succeeds\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. Delete unused second camera",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/api/cameras/{{camera2Id}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Camera deleted\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
